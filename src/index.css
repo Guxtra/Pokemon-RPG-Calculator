@@ -1,0 +1,89 @@
+@import url("https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap");
+
+:root {
+  color-scheme: dark;
+
+  /* Base ink palette */
+  --bg: #0F131A;
+  --bg-grid: #12171F;
+  --panel: #171C26;
+  --panel-raised: #1D2330;
+  --border: #2A3242;
+  --border-strong: #3A4356;
+
+  /* Text */
+  --text-primary: #E7E9EE;
+  --text-muted: #8B93A3;
+  --text-faint: #5B6373;
+
+  /* Accents */
+  --accent: #E4A54B;       /* âmbar — ações principais, STAB */
+  --accent-dim: #7A6236;
+  --critical: #E5484D;     /* vermelho — crítico, erros */
+  --super: #3FC79A;        /* verde-água — super efetivo */
+  --weak: #6B7690;         /* cinza-azulado — pouco efetivo / imune */
+
+  /* Tipografia */
+  --font-display: "Big Shoulders Display", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --radius: 3px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--bg-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+  background-size: 28px 28px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+button {
+  font-family: var(--font-mono);
+}
+
+input, select {
+  font-family: var(--font-mono);
+}
+
+::selection {
+  background: var(--accent);
+  color: #14171C;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
