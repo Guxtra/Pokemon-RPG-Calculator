@@ -4,3 +4,4 @@ dist-ssr
 *.local
 .npm
 node_modules/.tmp
+.vscode/
