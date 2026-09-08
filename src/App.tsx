@@ -19,6 +19,7 @@ export default function App() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [result, setResult] = useState<DamageResult | null>(null);
   const [calculationCount, setCalculationCount] = useState(0);
+  const [invalidPulse, setInvalidPulse] = useState(false);
 
   const damageInput = useMemo(
     () => buildDamageInput(attacker, move, defender, modifiers),
@@ -34,6 +35,8 @@ export default function App() {
       });
       setErrors(map);
       setResult(null);
+      setInvalidPulse(true);
+      setTimeout(() => setInvalidPulse(false), 300);
       return;
     }
     setErrors({});
@@ -60,8 +63,12 @@ export default function App() {
         <ModifiersPanel state={modifiers} onChange={setModifiers} errors={errors} />
 
         <div className="calculate-block">
-          <button type="button" className="calculate-button" onClick={handleCalculate}>
-            Calcular Dano
+          <button
+            type="button"
+            className={`calculate-button${invalidPulse ? " is-invalid" : ""}`}
+            onClick={handleCalculate}
+          >
+            ⚔ Calcular Dano
           </button>
           {Object.keys(errors).length > 0 && (
             <p className="calculate-error-note">
@@ -83,7 +90,7 @@ export default function App() {
       )}
 
       <footer className="app-footer">
-        <span>Calculadora de Dano · V1 · Núcleo de cálculo testado e independente da interface</span>
+        <span>Calculadora de Dano · V2 · Núcleo de cálculo testado e independente da interface</span>
       </footer>
     </div>
   );

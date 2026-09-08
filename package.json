@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.2.0",
   "type": "module",
-  "description": "Calculadora de dano para RPG inspirado em Pokémon — V1 (fórmula própria do RPG). Versão mesclada, combinando o motor validado da V-B com o stack e a UI ticket-style da V-A.",
+  "description": "Calculadora de dano para RPG inspirado em Pokémon, desenvolvida com React, TypeScript e Vite — V2 com redesign visual.",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

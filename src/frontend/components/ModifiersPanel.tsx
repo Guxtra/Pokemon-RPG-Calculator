@@ -19,7 +19,7 @@ interface ModifiersPanelProps {
 
 export function ModifiersPanel({ state, onChange, errors }: ModifiersPanelProps) {
   return (
-    <Panel title="Modificações" tag="MOD">
+    <Panel title="Modificações" tag="×">
       <label className="checkbox-row">
         <input
           type="checkbox"
@@ -27,7 +27,7 @@ export function ModifiersPanel({ state, onChange, errors }: ModifiersPanelProps)
           onChange={(e) => onChange({ ...state, critical: e.target.checked })}
         />
         Crítico
-        <span className="category-hint">×1,5 quando marcado</span>
+        <span className="category-hint">×1.5 quando marcado</span>
       </label>
       <StatField
         label="Modificador"

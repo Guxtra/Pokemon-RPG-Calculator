@@ -39,7 +39,7 @@ export function DefenderPanel({ state, onChange, errors }: DefenderPanelProps) {
         label="Nome (opcional)"
         value={state.name}
         onChange={(v) => set("name", v)}
-        placeholder="Ex.: Bulbasaur"
+        placeholder="Bulbasaur"
       />
       <div className="field-row">
         <TypeSelect
@@ -75,13 +75,13 @@ export function DefenderPanel({ state, onChange, errors }: DefenderPanelProps) {
       </div>
       <div className="field-row field-row-muted">
         <StatField
-          label="Modificação da DEF"
+          label="Modificação DEF"
           value={state.modDef}
           onChange={(v) => set("modDef", v)}
           placeholder="0"
         />
         <StatField
-          label="Modificação da Sp. DEF"
+          label="Modificação Sp. DEF"
           value={state.modSpDef}
           onChange={(v) => set("modSpDef", v)}
           placeholder="0"

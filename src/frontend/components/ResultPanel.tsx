@@ -44,7 +44,7 @@ export function ResultPanel({
 
   return (
     <section className="result-panel">
-      <div className="result-perforation" aria-hidden />
+      <div className="result-accent-bar" aria-hidden />
       <div className="result-body">
         <p className="result-headline">
           {defender ? `${attacker} usou ${move} em ${defender}!` : `${attacker} usou ${move}!`}
@@ -127,7 +127,12 @@ export function ResultPanel({
           </>
         )}
 
-        <button type="button" className="copy-button" onClick={handleCopy}>
+        <button
+          type="button"
+          className={`copy-button${copied ? " is-copied" : ""}`}
+          onClick={handleCopy}
+          aria-live="polite"
+        >
           {copied ? "Copiado!" : "Copiar resultado"}
         </button>
       </div>

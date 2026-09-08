@@ -3,31 +3,47 @@
 :root {
   color-scheme: dark;
 
-  /* Base ink palette */
-  --bg: #0F131A;
-  --bg-grid: #12171F;
-  --panel: #171C26;
-  --panel-raised: #1D2330;
-  --border: #2A3242;
-  --border-strong: #3A4356;
+  /* ---------- Cor ---------- */
+  --color-background: #10141b;       /* escuro, não preto puro */
+  --color-surface: #171c26;          /* painéis */
+  --color-surface-elevated: #1d2330; /* inputs, área de resultado */
+  --color-border: #2a3242;
+  --color-border-strong: #3a4356;
 
-  /* Text */
-  --text-primary: #E7E9EE;
-  --text-muted: #8B93A3;
-  --text-faint: #5B6373;
+  --color-text: #e7e9ee;
+  --color-text-muted: #8b93a3;
+  --color-text-faint: #5b6373;
 
-  /* Accents */
-  --accent: #E4A54B;       /* âmbar — ações principais, STAB */
-  --accent-dim: #7A6236;
-  --critical: #E5484D;     /* vermelho — crítico, erros */
-  --super: #3FC79A;        /* verde-água — super efetivo */
-  --weak: #6B7690;         /* cinza-azulado — pouco efetivo / imune */
+  --color-primary: #e4a54b;      /* âmbar — ações principais, STAB */
+  --color-primary-strong: #eeb868;
+  --color-primary-dim: #7a6236;
 
-  /* Tipografia */
+  --color-success: #3fc79a;      /* super efetivo, cópia confirmada */
+  --color-warning: #d9a441;      /* pouco efetivo */
+  --color-danger: #e5484d;       /* crítico, imunidade, erro */
+
+  /* ---------- Espaçamento ---------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 48px;
+
+  /* ---------- Raio ---------- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+
+  /* ---------- Tipografia ---------- */
   --font-display: "Big Shoulders Display", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
-  --radius: 3px;
+  /* ---------- Movimento ---------- */
+  --transition-fast: 120ms ease;
+  --transition-base: 180ms ease;
 }
 
 * {
@@ -40,12 +56,12 @@ html, body {
 }
 
 body {
-  background-color: var(--bg);
+  background-color: var(--color-background);
   background-image:
-    linear-gradient(var(--bg-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
   background-size: 28px 28px;
-  color: var(--text-primary);
+  color: var(--color-text);
   font-family: var(--font-mono);
   font-size: 15px;
   line-height: 1.5;
@@ -67,18 +83,23 @@ button {
   font-family: var(--font-mono);
 }
 
-input, select {
+input, select, button {
   font-family: var(--font-mono);
 }
 
+button {
+  touch-action: manipulation;
+}
+
 ::selection {
-  background: var(--accent);
-  color: #14171C;
+  background: var(--color-primary);
+  color: #14171c;
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 @media (prefers-reduced-motion: reduce) {

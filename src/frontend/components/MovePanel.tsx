@@ -30,12 +30,12 @@ export function MovePanel({ state, onChange, errors }: MovePanelProps) {
     onChange({ ...state, [key]: value });
 
   return (
-    <Panel title="Golpe" tag="POD">
+    <Panel title="Golpe" tag="PWR">
       <TextField
         label="Nome (opcional)"
         value={state.name}
         onChange={(v) => set("name", v)}
-        placeholder="Brasa"
+        placeholder="Ember"
       />
       <div className="field-row">
         <TypeSelect
@@ -80,7 +80,7 @@ export function MovePanel({ state, onChange, errors }: MovePanelProps) {
               onChange={() => set("category", "SPECIAL")}
             />
             Especial
-            <span className="category-hint">Sp. ATK / Sp. DEF</span>
+            <span className="category-hint">Sp.ATK / Sp.DEF</span>
           </label>
         </div>
         {errors["move.category"] && <span className="field-error">{errors["move.category"]}</span>}

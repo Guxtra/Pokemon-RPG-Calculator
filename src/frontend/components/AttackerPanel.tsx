@@ -34,12 +34,12 @@ export function AttackerPanel({ state, onChange, errors }: AttackerPanelProps) {
     onChange({ ...state, [key]: value });
 
   return (
-    <Panel title="Atacante" tag="ATQ">
+    <Panel title="Atacante" tag="ATK">
       <TextField
         label="Nome (opcional)"
         value={state.name}
         onChange={(v) => set("name", v)}
-        placeholder="Ex.: Charmander"
+        placeholder="Charmander"
       />
       <div className="field-row">
         <TypeSelect
@@ -75,13 +75,13 @@ export function AttackerPanel({ state, onChange, errors }: AttackerPanelProps) {
       </div>
       <div className="field-row field-row-muted">
         <StatField
-          label="Modificação do ATK"
+          label="Modificação ATK"
           value={state.modAtk}
           onChange={(v) => set("modAtk", v)}
           placeholder="0"
         />
         <StatField
-          label="Modificação do Sp. ATK"
+          label="Modificação Sp. ATK"
           value={state.modSpAtk}
           onChange={(v) => set("modSpAtk", v)}
           placeholder="0"
