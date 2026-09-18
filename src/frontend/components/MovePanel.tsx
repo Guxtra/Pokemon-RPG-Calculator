@@ -1,7 +1,10 @@
+import { useEffect, useState } from "react";
 import { Panel } from "./Panel";
 import { StatField } from "./StatField";
 import { TextField } from "./TextField";
 import { TypeSelect } from "./TypeSelect";
+import { CatalogSearch } from "./CatalogSearch";
+import { type MoveListItem } from "../lib/api";
 
 export interface MoveFormState {
   name: string;
@@ -23,14 +26,78 @@ interface MovePanelProps {
   state: MoveFormState;
   onChange: (state: MoveFormState) => void;
   errors: Record<string, string>;
+  movesCatalog: MoveListItem[];
 }
 
-export function MovePanel({ state, onChange, errors }: MovePanelProps) {
+export function MovePanel({ state, onChange, errors, movesCatalog }: MovePanelProps) {
+  const [mode, setMode] = useState<"manual" | "catalog">("manual");
+  const [selected, setSelected] = useState<MoveListItem | null>(null);
+  const [catalogLoading, setCatalogLoading] = useState(false);
+  const [catalogError, setCatalogError] = useState<string | null>(null);
+
   const set = <K extends keyof MoveFormState>(key: K, value: MoveFormState[K]) =>
     onChange({ ...state, [key]: value });
 
+  useEffect(() => {
+    if (mode !== "catalog" || !selected) return;
+
+    setCatalogLoading(true);
+    setCatalogError(null);
+
+    // Preenche os campos com o golpe selecionado
+    onChange({
+      ...state,
+      name: selected.name,
+      type: selected.type,
+      category: selected.category,
+      power: String(selected.power),
+    });
+
+    return () => {
+      setCatalogLoading(false);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, selected]);
+
   return (
     <Panel title="Golpe" tag="PWR">
+      <div className="mode-toggle" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mode === "manual"}
+          className={`mode-toggle-option${mode === "manual" ? " mode-toggle-option-active" : ""}`}
+          onClick={() => setMode("manual")}
+        >
+          Manual
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mode === "catalog"}
+          className={`mode-toggle-option${mode === "catalog" ? " mode-toggle-option-active" : ""}`}
+          onClick={() => setMode("catalog")}
+        >
+          Catálogo
+        </button>
+      </div>
+
+      {mode === "catalog" && (
+        <div className="catalog-loader">
+          <CatalogSearch
+            items={movesCatalog}
+            getId={(m) => m.pokeapi_id}
+            getLabel={(m) => m.name}
+            getSubLabel={(m) => `PWR ${m.power} · ${m.category}`}
+            onSelect={(m) => setSelected(m)}
+            placeholder="Buscar golpe (nome)"
+            selectedLabel={selected ? `${selected.name} (PWR ${selected.power})` : undefined}
+          />
+          {catalogLoading && <p className="catalog-status">Carregando golpe…</p>}
+          {catalogError && <p className="catalog-error">{catalogError}</p>}
+        </div>
+      )}
+
       <TextField
         label="Nome (opcional)"
         value={state.name}

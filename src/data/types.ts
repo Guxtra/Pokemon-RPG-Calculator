@@ -1,8 +1,8 @@
 /**
  * Catálogo dos 18 tipos modernos e seus rótulos de exibição.
  *
- * Os IDs permanecem em inglês para uso interno; os nomes visíveis ao usuário
- * são definidos explicitamente em português.
+ * Dado puro: nenhuma regra de cálculo vive aqui. No futuro este arquivo
+ * poderá ser substituído por JSON → banco de dados → API sem tocar no motor.
  */
 
 import type { PokemonType } from "../core/models";
@@ -33,28 +33,12 @@ export const TYPE_IDS: PokemonType[] = [
   "fairy",
 ];
 
-export const TYPE_LABELS: Record<PokemonType, string> = {
-  normal: "Normal",
-  fire: "Fogo",
-  water: "Água",
-  electric: "Elétrico",
-  grass: "Grama",
-  ice: "Gelo",
-  fighting: "Lutador",
-  poison: "Veneno",
-  ground: "Terrestre",
-  flying: "Voador",
-  psychic: "Psíquico",
-  bug: "Inseto",
-  rock: "Pedra",
-  ghost: "Fantasma",
-  dragon: "Dragão",
-  dark: "Sombrio",
-  steel: "Aço",
-  fairy: "Fada",
-};
-
 export const TYPES: TypeInfo[] = TYPE_IDS.map((id) => ({
   id,
-  label: TYPE_LABELS[id],
+  label: id.charAt(0).toUpperCase() + id.slice(1),
 }));
+
+/** Índice rápido id → rótulo de exibição. */
+export const TYPE_LABELS: Record<PokemonType, string> = Object.fromEntries(
+  TYPES.map((t) => [t.id, t.label])
+) as Record<PokemonType, string>;

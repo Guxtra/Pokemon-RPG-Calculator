@@ -12,6 +12,7 @@ import type { AttackerFormState } from "../components/AttackerPanel";
 import type { MoveFormState } from "../components/MovePanel";
 import type { DefenderFormState } from "../components/DefenderPanel";
 import type { ModifiersFormState } from "../components/ModifiersPanel";
+import type { PokemonFormState } from "../components/PokemonPanel";
 
 /** Campo numérico obrigatório: string vazia vira NaN (validators.ts rejeita e explica). */
 function parseRequiredNumber(value: string): number {
@@ -67,6 +68,45 @@ export function buildDamageInput(
     modifiers: {
       critical: modifiers.critical,
       multiplier: modifiers.multiplier.trim() === "" ? undefined : Number(modifiers.multiplier),
+    },
+  };
+}
+
+/** Quem ataca nesta jogada. Os painéis ("Seu Pokémon"/"Pokémon Adversário") nunca mudam de posição — só isto inverte. */
+export type Direction = "yourPokemonAttacks" | "opponentAttacks";
+
+/**
+ * Decide, a partir da direção atual, qual painel fixo alimenta o
+ * `attacker` e qual alimenta o `defender` do core. Cada painel guarda
+ * os 4 stats sempre — aqui só selecionamos o par relevante pro papel
+ * de cada um nesta jogada, sem apagar o resto do estado.
+ */
+export function resolveBattleRoles(
+  yourPokemon: PokemonFormState,
+  opponent: PokemonFormState,
+  direction: Direction
+): { attackerState: AttackerFormState; defenderState: DefenderFormState } {
+  const attackerPokemon = direction === "yourPokemonAttacks" ? yourPokemon : opponent;
+  const defenderPokemon = direction === "yourPokemonAttacks" ? opponent : yourPokemon;
+
+  return {
+    attackerState: {
+      name: attackerPokemon.name,
+      type1: attackerPokemon.type1,
+      type2: attackerPokemon.type2,
+      atk: attackerPokemon.atk,
+      spAtk: attackerPokemon.spAtk,
+      modAtk: attackerPokemon.modAtk,
+      modSpAtk: attackerPokemon.modSpAtk,
+    },
+    defenderState: {
+      name: defenderPokemon.name,
+      type1: defenderPokemon.type1,
+      type2: defenderPokemon.type2,
+      def: defenderPokemon.def,
+      spDef: defenderPokemon.spDef,
+      modDef: defenderPokemon.modDef,
+      modSpDef: defenderPokemon.modSpDef,
     },
   };
 }

@@ -27,6 +27,86 @@
   max-width: 56ch;
 }
 
+/* ---------- Barra de direção ---------- */
+
+.direction-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.direction-label {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  color: var(--color-text);
+}
+
+.direction-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.direction-verb {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+}
+
+.direction-arrow-line {
+  font-family: var(--font-mono);
+  color: var(--color-primary);
+  font-size: 0.95rem;
+  letter-spacing: -0.02em;
+}
+
+.direction-swap-button {
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.direction-swap-button:hover {
+  background: var(--color-primary);
+  color: #16130b;
+  border-color: var(--color-primary);
+}
+
+@media (max-width: 640px) {
+  .direction-bar {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+}
+
+/* ---------- Coluna central (direção + golpe) ---------- */
+
+.app-center-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
 /* ---------- Grid de painéis ---------- */
 
 .app-grid {
@@ -46,22 +126,13 @@
 
 @media (max-width: 980px) {
   .app-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  .app-grid > :last-child {
-    grid-column: 1 / -1;
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 640px) {
   .app-shell {
     padding: var(--space-6) var(--space-4) var(--space-8);
-  }
-  .app-grid {
-    grid-template-columns: 1fr;
-  }
-  .app-grid > :last-child {
-    grid-column: auto;
   }
   .app-modifiers-row {
     grid-template-columns: 1fr;
@@ -127,6 +198,118 @@
 
 .field-row-muted {
   opacity: 0.92;
+}
+
+.advanced-toggle {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.76rem;
+  letter-spacing: 0.02em;
+  padding: var(--space-1) 0;
+  cursor: pointer;
+  text-align: left;
+  align-self: flex-start;
+  transition: color var(--transition-fast);
+}
+
+.advanced-toggle:hover {
+  color: var(--color-primary);
+}
+
+/* ---------- Modo Catálogo / Manual ---------- */
+
+.mode-toggle {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.mode-toggle-option {
+  flex: 1;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  padding: var(--space-2) var(--space-3);
+  min-height: 36px;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.mode-toggle-option-active {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.catalog-loader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-sm);
+}
+
+.catalog-search {
+  position: relative;
+}
+
+.catalog-search-list {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  list-style: none;
+  margin: 0;
+}
+
+.catalog-search-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--color-text);
+  text-align: left;
+}
+
+.catalog-search-option:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.catalog-search-sub {
+  color: var(--color-text-faint);
+  font-size: 0.75rem;
+}
+
+.catalog-status {
+  margin: 0;
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+}
+
+.app-catalog-warning {
+  margin: var(--space-2) 0 0;
+  font-size: 0.78rem;
+  color: var(--color-danger);
 }
 
 .field-label {
