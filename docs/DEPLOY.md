@@ -1,17 +1,19 @@
 # Deploy — Pokémon RPG Calculator V3
 
 **Este guia ainda não foi executado.** Documenta o processo planejado
-para quando o deploy for autorizado. Nenhum recurso remoto (Railway,
-Cloudflare) foi criado ainda.
+para quando o deploy for autorizado. Nenhum recurso remoto (Railway)
+foi criado ainda — o projeto Cloudflare Workers do frontend já existe
+(é onde a V2 está publicada hoje, com Workers Builds conectado ao
+GitHub) e será reaproveitado, não recriado.
 
 Arquitetura planejada:
 
 ```
-Cloudflare Workers (frontend)
+Cloudflare Workers (frontend, já existe — Workers Builds conectado ao GitHub)
         ↓ HTTPS
-FastAPI (Railway)
+FastAPI (Railway — a criar)
         ↓
-PostgreSQL (Railway)
+PostgreSQL (Railway — a criar)
 ```
 
 ---
@@ -39,7 +41,7 @@ seletor pra isso).
 | Variável | Valor |
 |---|---|
 | `DATABASE_URL` | referência ao plugin Postgres (passo 2) |
-| `CORS_ORIGINS` | `http://localhost:5173` inicialmente; depois de publicar o frontend, adicionar a URL de produção, separada por vírgula |
+| `CORS_ORIGINS` | `http://localhost:5173` inicialmente; depois de confirmar a URL de produção do Cloudflare Pages (passo 8 abaixo), adicionar aqui também, separada por vírgula |
 | `ENVIRONMENT` | `production` |
 
 `app/config.py` já lê essas variáveis do ambiente — em produção o
@@ -49,7 +51,7 @@ servidor.
 ### 4. Arquivos de infraestrutura já preparados
 
 - `backend/Procfile`: `web: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT` — roda as migrations a cada deploy (seguro, idempotente) e sobe o servidor.
-- `backend/.python-version`: fixa Python 3.14, igual ao ambiente local.
+- `backend/.python-version`: fixa Python 3.14, igual ao ambiente local. **Atenção:** conferir se esse arquivo está com o nome certo no repositório (com o ponto no início) — já apareceu sem o ponto em outra etapa.
 
 Não alterar esses arquivos sem necessidade (conforme AGENTS.md).
 
@@ -87,41 +89,75 @@ segundo só devolve dados depois do passo 6.
 
 ---
 
-## Frontend (Cloudflare Workers) — processo a confirmar
+## Frontend (Cloudflare Workers — Workers Builds)
 
-**Pendente de definição.** O repositório não tem `wrangler.toml`, nem
-`wrangler` como dependência, nem script de deploy — então a publicação
-atual da V2 nesse Workers provavelmente foi feita por fora do
-repositório (upload manual, ou um processo em outro lugar). Não vou
-assumir que a V3 vai usar o mesmo processo.
+O projeto já existe no Cloudflare Workers (`pokemon-rpg-calculator`,
+domínio `pokemon-rpg-calculator.vyperd2.workers.dev`), com **Workers
+Builds** conectado ao repositório do GitHub — é onde a V2 está
+publicada. Não é preciso criar nada novo, só reconfigurar pra apontar
+pra API de produção.
 
-O que já sabemos que a V3 precisa, independente do método escolhido:
+### 8. Verificar o arquivo de configuração do Worker
 
-- `VITE_API_URL` configurada para a URL pública do backend no Railway
-  (nunca hardcoded em componente nenhum — já é assim no código).
-- `npm run build` gera `dist/` com os arquivos estáticos prontos.
-- CORS do backend precisa incluir a origem de produção do frontend
-  (passo 3 da seção do backend, acima).
+Workers com build via Git normalmente precisam de um `wrangler.jsonc`
+ou `wrangler.toml` no repositório, descrevendo como servir os arquivos
+estáticos gerados pelo `vite build` (`assets` apontando pra `dist/`).
+**Esse arquivo não apareceu na inspeção do repositório até agora** —
+antes de mexer em qualquer configuração, confirma no dashboard
+(`Workers` → `pokemon-rpg-calculator` → **Settings** → **Build**) qual
+é o **build command** e o **deploy command** configurados ali. Se
+existir um `wrangler.jsonc`/`wrangler.toml` no repo que eu não vi
+(talvez fora do que foi zipado/enviado até agora), me manda o conteúdo
+antes do deploy — pra eu confirmar que ele não hardcoda nenhuma URL de
+API antiga.
 
-Antes de detalhar os passos exatos de publicação (wrangler CLI direto,
-Cloudflare Pages conectado ao GitHub, upload manual do `dist/`, etc.),
-preciso que você confirme qual método a V2 usa hoje — daí completo
-esta seção com o processo real, sem inventar.
+### 9. Configurar a variável de ambiente de build
+
+No dashboard: `Workers` → `pokemon-rpg-calculator` → **Settings** →
+**Variables and Secrets** (ou **Build variables**, dependendo de como
+o Workers Builds expõe isso na sua conta) → adicionar:
+
+| Variável | Valor |
+|---|---|
+| `VITE_API_URL` | URL pública do backend no Railway (passo 7) |
+
+**Importante:** o Vite embute variáveis `VITE_*` no JavaScript **na
+hora do build**, não em tempo de execução. Ela precisa estar
+disponível durante o `npm run build` que o Workers Builds roda — se o
+painel separar "variáveis de build" de "variáveis de runtime", use a
+de build. Qualquer mudança nela exige um novo build/deploy, não só
+"reiniciar" o Worker.
+
+### 10. Atualizar o CORS do backend
+
+O domínio de produção do frontend já é conhecido:
+`https://pokemon-rpg-calculator.vyperd2.workers.dev` (confirmado, não
+customizado). Depois do passo 9, volta no Railway e atualiza
+`CORS_ORIGINS` (passo 3) incluindo essa URL, separada por vírgula da
+de localhost.
+
+### 11. Novo deploy do frontend
+
+Um push no GitHub dispara o Workers Build automaticamente com a nova
+`VITE_API_URL` já embutida (já que é Git-integrado). Se preferir
+forçar sem push, o dashboard deve ter um botão de **redeploy** manual.
 
 ---
 
 ## Depois do deploy — validação E2E em produção
 
-Só depois que backend e frontend estiverem publicados:
+Só depois que backend e frontend estiverem publicados e apontando um
+pro outro:
 
-1. Abrir a URL pública do frontend.
+1. Abrir a URL pública do frontend (Cloudflare Pages).
 2. Confirmar que o catálogo de Pokémon e de golpes carrega (sem erro
-   de CORS no console).
+   de CORS no console do navegador).
 3. Fazer um cálculo completo (Catálogo → Catálogo → Calcular) e
    confirmar que o resultado vem da API de produção (não de nenhum
    cálculo local).
 4. Testar o botão Trocar em produção.
-5. Confirmar HTTPS em ambas as pontas.
+5. Confirmar HTTPS em ambas as pontas (deveria vir de graça, tanto
+   Railway quanto Cloudflare Pages servem HTTPS por padrão).
 
 Só ao final dessa validação a V3 deve ser considerada pronta para a
 tag de release `3.0.0` (ver `CHANGELOG.md`).

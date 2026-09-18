@@ -51,12 +51,14 @@ interface PokemonPanelProps {
  * Painel de um Pokémon com identidade FIXA ("Seu Pokémon" ou "Pokémon
  * Adversário" — decidido pelo `title`, de fora).
  *
- * Modo Catálogo x Manual: em qualquer um dos dois, os mesmos campos
- * (Nome, Tipos, ATK/DEF/Sp.ATK/Sp.DEF) ficam visíveis e editáveis — o
- * Catálogo só ADICIONA um buscador + campo de nível que, ao carregar,
- * PRÉ-PREENCHE esses campos a partir de GET /api/pokemon/{id}/stats.
- * Depois de carregado, o usuário pode editar livremente sem alterar o
- * catálogo oficial (decisão aprovada da V3).
+ * O buscador do catálogo fica sempre visível (não há mais toggle
+ * Manual/Catálogo — decisão do usuário: a "liberdade de editar na
+ * mão" já é satisfeita por todos os campos continuarem editáveis
+ * depois de carregados do catálogo, sem precisar de um modo separado
+ * que escondesse a busca). PRÉ-PREENCHE Nome/Tipos/ATK/DEF/Sp.ATK/
+ * Sp.DEF a partir de GET /api/pokemon/{id}/stats ao selecionar —
+ * depois disso, o usuário edita livremente sem alterar o catálogo
+ * oficial (decisão aprovada da V3).
  */
 export function PokemonPanel({
   title,
@@ -67,7 +69,6 @@ export function PokemonPanel({
   pokemonCatalog,
 }: PokemonPanelProps) {
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [mode, setMode] = useState<"manual" | "catalog">("manual");
   const [level, setLevel] = useState("50");
   const [selected, setSelected] = useState<PokemonListItem | null>(null);
   const [catalogLoading, setCatalogLoading] = useState(false);
@@ -79,7 +80,7 @@ export function PokemonPanel({
   const isAttacking = role === "attacker";
 
   useEffect(() => {
-    if (mode !== "catalog" || !selected) return;
+    if (!selected) return;
 
     const levelNum = Number(level);
     if (!Number.isInteger(levelNum) || levelNum < 1 || levelNum > 100) return;
@@ -114,53 +115,30 @@ export function PokemonPanel({
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, selected, level]);
+  }, [selected, level]);
 
   return (
     <Panel title={title} tag={isAttacking ? "ATACA" : "DEFENDE"}>
-      <div className="mode-toggle" role="tablist">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={mode === "manual"}
-          className={`mode-toggle-option${mode === "manual" ? " mode-toggle-option-active" : ""}`}
-          onClick={() => setMode("manual")}
-        >
-          Manual
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={mode === "catalog"}
-          className={`mode-toggle-option${mode === "catalog" ? " mode-toggle-option-active" : ""}`}
-          onClick={() => setMode("catalog")}
-        >
-          Catálogo
-        </button>
+      <div className="catalog-loader">
+        <CatalogSearch
+          items={pokemonCatalog}
+          getId={(p) => p.pokeapi_id}
+          getLabel={(p) => p.name}
+          getSubLabel={(p) => `#${p.national_dex_number}`}
+          onSelect={(p) => setSelected(p)}
+          placeholder="Buscar Pokémon (nome ou nº da Pokédex)"
+          selectedLabel={selected ? `${selected.name} (#${selected.national_dex_number})` : undefined}
+        />
+        <StatField
+          label="Nível"
+          value={level}
+          onChange={setLevel}
+          required
+          placeholder="1-100"
+          error={catalogError ?? undefined}
+        />
+        {catalogLoading && <p className="catalog-status">Carregando stats do catálogo…</p>}
       </div>
-
-      {mode === "catalog" && (
-        <div className="catalog-loader">
-          <CatalogSearch
-            items={pokemonCatalog}
-            getId={(p) => p.pokeapi_id}
-            getLabel={(p) => p.name}
-            getSubLabel={(p) => `#${p.national_dex_number}`}
-            onSelect={(p) => setSelected(p)}
-            placeholder="Buscar Pokémon (nome ou nº da Pokédex)"
-            selectedLabel={selected ? `${selected.name} (#${selected.national_dex_number})` : undefined}
-          />
-          <StatField
-            label="Nível"
-            value={level}
-            onChange={setLevel}
-            required
-            placeholder="1-100"
-            error={catalogError ?? undefined}
-          />
-          {catalogLoading && <p className="catalog-status">Carregando stats do catálogo…</p>}
-        </div>
-      )}
 
       <TextField
         label="Nome (opcional)"

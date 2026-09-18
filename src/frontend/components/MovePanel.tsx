@@ -30,7 +30,6 @@ interface MovePanelProps {
 }
 
 export function MovePanel({ state, onChange, errors, movesCatalog }: MovePanelProps) {
-  const [mode, setMode] = useState<"manual" | "catalog">("manual");
   const [selected, setSelected] = useState<MoveListItem | null>(null);
   const [catalogLoading, setCatalogLoading] = useState(false);
   const [catalogError, setCatalogError] = useState<string | null>(null);
@@ -39,7 +38,7 @@ export function MovePanel({ state, onChange, errors, movesCatalog }: MovePanelPr
     onChange({ ...state, [key]: value });
 
   useEffect(() => {
-    if (mode !== "catalog" || !selected) return;
+    if (!selected) return;
 
     setCatalogLoading(true);
     setCatalogError(null);
@@ -57,46 +56,23 @@ export function MovePanel({ state, onChange, errors, movesCatalog }: MovePanelPr
       setCatalogLoading(false);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, selected]);
+  }, [selected]);
 
   return (
     <Panel title="Golpe" tag="PWR">
-      <div className="mode-toggle" role="tablist">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={mode === "manual"}
-          className={`mode-toggle-option${mode === "manual" ? " mode-toggle-option-active" : ""}`}
-          onClick={() => setMode("manual")}
-        >
-          Manual
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={mode === "catalog"}
-          className={`mode-toggle-option${mode === "catalog" ? " mode-toggle-option-active" : ""}`}
-          onClick={() => setMode("catalog")}
-        >
-          Catálogo
-        </button>
+      <div className="catalog-loader">
+        <CatalogSearch
+          items={movesCatalog}
+          getId={(m) => m.pokeapi_id}
+          getLabel={(m) => m.name}
+          getSubLabel={(m) => `PWR ${m.power} · ${m.category}`}
+          onSelect={(m) => setSelected(m)}
+          placeholder="Buscar golpe (nome)"
+          selectedLabel={selected ? `${selected.name} (PWR ${selected.power})` : undefined}
+        />
+        {catalogLoading && <p className="catalog-status">Carregando golpe…</p>}
+        {catalogError && <p className="catalog-error">{catalogError}</p>}
       </div>
-
-      {mode === "catalog" && (
-        <div className="catalog-loader">
-          <CatalogSearch
-            items={movesCatalog}
-            getId={(m) => m.pokeapi_id}
-            getLabel={(m) => m.name}
-            getSubLabel={(m) => `PWR ${m.power} · ${m.category}`}
-            onSelect={(m) => setSelected(m)}
-            placeholder="Buscar golpe (nome)"
-            selectedLabel={selected ? `${selected.name} (PWR ${selected.power})` : undefined}
-          />
-          {catalogLoading && <p className="catalog-status">Carregando golpe…</p>}
-          {catalogError && <p className="catalog-error">{catalogError}</p>}
-        </div>
-      )}
 
       <TextField
         label="Nome (opcional)"
